@@ -1,8 +1,10 @@
 package mesclasses;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.json.JSONException;
 import org.json.JSONObject;
   
 public class graph
@@ -51,7 +53,7 @@ public class graph
     }
     
     //Collect all correspondance in an Arraylist and create edge for correspondance
-    public static void graphConstruction(Graph g, ArrayList<Integer> S) {
+    public static void graphConstruction(Graph g, ArrayList<Integer> S) throws JSONException, IOException {
     	Data.GraphCorrespondance(g, S);
     	//Collect all the stations in a nice order in several arraylists and create edge between each stations
     	Data.GraphLignes(g, S);

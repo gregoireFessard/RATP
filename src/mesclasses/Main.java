@@ -1,7 +1,7 @@
 package mesclasses;
 
 import java.util.ArrayList;
-
+import java.io.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,7 +10,7 @@ import mesclasses.graph.Graph;
 
 public class Main {
 
-	public static void main(String[] args) throws JSONException {
+	public static void main(String[] args) throws JSONException,IOException {
 		
 		// here we create an arraylist with all the stations
 	    ArrayList<Integer> Stations = new ArrayList<>();

@@ -1,12 +1,12 @@
 package mesclasses;
-import org.json.*;
 
-import java.io.InputStream;
+import org.json.*;
+import java.io.*;
 import java.util.Scanner;
 
 public class collection {
 
-	public static String getJSONStringFromFile(String path) {
+	public static String getJSONStringFromFile(String path) throws IOException{
 		Scanner scanner;
 		InputStream in = FileHandle.inputStreamFromFile(path);
 		scanner = new Scanner(in);
@@ -15,7 +15,7 @@ public class collection {
 		return json;
 	}
 	
-	public static JSONObject getJSONObjectFromFile(String path) throws JSONException {
+	public static JSONObject getJSONObjectFromFile(String path) throws JSONException,IOException {
 		return new JSONObject(getJSONStringFromFile(path));
 	}
 	

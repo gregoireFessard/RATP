@@ -5,13 +5,13 @@ import java.io.InputStream;
 public class FileHandle {
 
 public static InputStream inputStreamFromFile(String path) {
+	InputStream inputStream = null;
 	try {
-		InputStream inputStream = FileHandle.class.getResourceAsStream(path);
-		return inputStream;
+		inputStream = FileHandle.class.getResourceAsStream(path);
 	} catch(Exception e) {
 		e.printStackTrace();
 	}
-	return null;
+	return inputStream;
 }
 
 }

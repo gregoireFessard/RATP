@@ -1,11 +1,12 @@
 package mesclasses;
+import java.io.IOException;
 import java.util.ArrayList;
 import org.json.*;
 import mesclasses.graph.Graph;
 public class Data {
 	
 	//here we create an arrayList with all the correspondance
-	public static void GraphCorrespondance(Graph g, ArrayList<Integer> Stations) throws JSONException {
+	public static void GraphCorrespondance(Graph g, ArrayList<Integer> Stations) throws JSONException, IOException {
 		//get the JSON
 		JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
 	    JSONArray jsonArray = obj.getJSONArray("corresp");
@@ -35,7 +36,7 @@ public class Data {
 	}
 	
 	//repete the processus with all metros
-	public static void GraphLignes(Graph g, ArrayList<Integer> Stations) throws JSONException {
+	public static void GraphLignes(Graph g, ArrayList<Integer> Stations) throws JSONException, IOException {
 		JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
 		JSONObject lignes = obj.getJSONObject("lignes");
 		JSONObject metro = new JSONObject();

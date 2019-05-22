@@ -1,8 +1,11 @@
 package mesclasses;
 import org.json.*;
+
+import java.io.IOException;
+
 public class MainOrg {
 
-	public static void main(String[] args) throws JSONException {
+	public static void main(String[] args) throws JSONException, IOException {
 		JSONObject obj = collection.getJSONObjectFromFile("/org.json");
 		String[] names = JSONObject.getNames(obj);
 		for(String string : names) {
