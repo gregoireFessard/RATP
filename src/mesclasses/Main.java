@@ -39,6 +39,11 @@ public class Main {
 	    Graph g = new Graph(V);
         graph.graphConstruction(g, Stations);
         //graph.printGraph(g);
-        BFS.bfs(g, 1, 200, Stations);
+        
+        //afficher tout le chemin BFS
+        //System.out.println("le chemin complet que parcours l'algorithme");
+        //BFS.bfs(g, 1, 200, Stations);
+        System.out.println("Le chemin le plus court");
+        BFSShortestPath.findShortestPath(g, 1, 200);
 	}
 }
