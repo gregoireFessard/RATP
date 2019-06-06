@@ -44,6 +44,6 @@ public class Main {
         //System.out.println("le chemin complet que parcours l'algorithme");
         //BFS.bfs(g, 1, 200, Stations);
         System.out.println("Le chemin le plus court");
-        BFSShortestPath.findShortestPath(g, 1, 200);
+        BFS.findShortestPath(g, 1, 200);
 	}
 }
