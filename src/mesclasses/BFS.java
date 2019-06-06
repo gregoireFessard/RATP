@@ -6,7 +6,7 @@ import mesclasses.Graph;
 
 public class BFS {
 	
-	public static ArrayList<Integer> bfsUtil(Graph G, int start, int[] prev, int[] dist, boolean[] mark) {
+/*	public static ArrayList<Integer> bfsUtil(Graph G, int start, int[] prev, int[] dist, boolean[] mark) {
 
 	// prints BFS traversal from a given source s
 	
@@ -129,5 +129,5 @@ public class BFS {
 			System.out.print(node+" ");
 		}
 		System.out.print("]");
-	}
+	}*/
 }
