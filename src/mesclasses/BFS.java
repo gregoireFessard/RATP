@@ -2,7 +2,7 @@ package mesclasses;
 
 import java.util.*;
 
-import mesclasses.graph.Graph;
+import mesclasses.Graph;
 
 public class BFS {
 	

@@ -1,70 +1,52 @@
 package mesclasses;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
   
-public class graph
+public class Graph
 {
-    // Size of array will be V (number of vertices in graph)
-    static class Graph
-    { 
-        static int V;
-        public static LinkedList<Integer> adjListArray[];
-          
-        // constructor  
-        Graph(int V) 
-        { 
-            this.V = V; 
-            // number of vertices 
-            adjListArray = new LinkedList[V]; 
-              
-            // Create a new list for each vertex
-            for(int i = 0; i < V ; i++){
-                adjListArray[i] = new LinkedList<>();
-            } 
-        } 
-    }
+    // Size of array will be V (number of vertices in Graph)
 
-    // Adds an edge to an undirected graph
-    public static void addEdge(Graph graph, int src, int dest) 
-    {
-        // Add an edge from src to dest
-        graph.adjListArray[src].add(dest); 
-          
-        // Since graph is undirected, add an edge from dest to src also
-        graph.adjListArray[dest].add(src);
-    }
-    
-    //print the graph
-    static void printGraph(Graph graph) 
-    {       
-        for(int v = 0; v < graph.V; v++) 
-        { 
-            System.out.println("Adjacency list of vertex "+ v);
-            for(Integer vert: graph.adjListArray[v]){ 
-                System.out.print(" -> "+ vert);
-            } 
-            System.out.println("\n"); 
+    public int V;
+    public static LinkedList<Integer> adjListArray[];
+
+    // constructor
+    Graph(String json) throws IOException, JSONException {
+
+        ArrayList<Integer> Stations = new ArrayList<>();
+        JSONObject obj = collection.getJSONObjectFromFile(json);
+        JSONObject stat = obj.getJSONObject("stations");
+        String[] names = JSONObject.getNames(stat);
+        for(String string : names) {
+            //for all stations
+            JSONObject metro = stat.getJSONObject(string);
+            String type = metro.getString("type");
+            //if the station is a metro
+            if (type.matches("metro")){
+                //add the station to the list
+                Stations.add(Integer.valueOf(string));
+            }
         }
-    }
-    
-    //Collect all correspondance in an Arraylist and create edge for correspondance
-    public static void graphConstruction(Graph g, ArrayList<Integer> S) throws JSONException, IOException {
-    	graph.GraphCorrespondance(g, S);
-    	//Collect all the stations in a nice order in several arraylists and create edge between each stations
-        graph.GraphLignes(g, S);
-    }
 
-    public static void GraphCorrespondance(Graph g, ArrayList<Integer> Stations) throws JSONException, IOException {
-        //get the JSON
-        JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
+        //1850 is an exception for us, it's supposed to be a metro but in the JSON it's a rer
+        //so we had to add it manually
+        Stations.add(Integer.valueOf("1850"));
+
+        this.V = Stations.size();
+        // number of vertices
+        adjListArray = new LinkedList[V];
+
+        // Create a new list for each vertex
+        for(int i = 0; i < V ; i++){
+            adjListArray[i] = new LinkedList<>();
+        }
+
         JSONArray jsonArray = obj.getJSONArray("corresp");
-        JSONArray list = new JSONArray();
+        JSONArray list;
         //trick to remove all RER
         String corr = new String();
         ArrayList<Integer> Correspondance = new ArrayList();
@@ -84,14 +66,10 @@ public class graph
             //found their index in the arraylist station
             //Link them with their own index
             if (Stations.contains(Correspondance.get(a-1)) && (Stations.contains(Correspondance.get(a)))){
-                graph.addEdge(g, Stations.indexOf(Correspondance.get(a-1)), Stations.indexOf(Correspondance.get(a)));
+                addEdge(Stations.indexOf(Correspondance.get(a-1)), Stations.indexOf(Correspondance.get(a)));
             }
         }
-    }
 
-    //repete the processus with all metros
-    public static void GraphLignes(Graph g, ArrayList<Integer> Stations) throws JSONException, IOException {
-        JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
         JSONObject lignes = obj.getJSONObject("lignes");
         JSONObject metro = new JSONObject();
         JSONArray arrets = new JSONArray();
@@ -109,7 +87,7 @@ public class graph
                 }
                 for(int a = 1; a < Lignes.size(); a++) {
                     //create edge
-                    graph.addEdge(g, Stations.indexOf(Lignes.get(a-1)), Stations.indexOf(Lignes.get(a)));
+                    addEdge(Stations.indexOf(Lignes.get(a-1)), Stations.indexOf(Lignes.get(a)));
                 }
                 Lignes.clear();
             }
@@ -123,7 +101,7 @@ public class graph
             Lignes.add(Integer.valueOf((String) listArrets.get(j)));
         }
         for(int a = 1; a < Lignes.size(); a++) {
-            graph.addEdge(g, Stations.indexOf(Lignes.get(a-1)), Stations.indexOf(Lignes.get(a)));
+            addEdge(Stations.indexOf(Lignes.get(a-1)), Stations.indexOf(Lignes.get(a)));
         }
         metro = lignes.getJSONObject("7B");
         arrets = metro.getJSONArray("arrets");
@@ -133,7 +111,32 @@ public class graph
             Lignes.add(Integer.valueOf((String) listArrets.get(j)));
         }
         for(int a = 1; a < Lignes.size(); a++) {
-            graph.addEdge(g, Stations.indexOf(Lignes.get(a-1)), Stations.indexOf(Lignes.get(a)));
+            addEdge(Stations.indexOf(Lignes.get(a-1)), Stations.indexOf(Lignes.get(a)));
+        }
+
+    }
+
+
+    // Adds an edge to an undirected Graph
+    public void addEdge(int src, int dest)
+    {
+        // Add an edge from src to dest
+        adjListArray[src].add(dest);
+          
+        // Since Graph is undirected, add an edge from dest to src also
+        adjListArray[dest].add(src);
+    }
+    
+    //print the Graph
+    public void printGraph(Graph graph)
+    {       
+        for(int v = 0; v < graph.V; v++) 
+        { 
+            System.out.println("Adjacency list of vertex "+ v);
+            for(Integer vert: graph.adjListArray[v]){ 
+                System.out.print(" -> "+ vert);
+            } 
+            System.out.println("\n"); 
         }
     }
 }
