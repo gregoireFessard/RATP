@@ -28,5 +28,24 @@ public class Main {
 	public static void main(String[] args) throws JSONException,IOException {
 
 		RATP();
+		/*
+        JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
+
+        JSONObject listStations = obj.getJSONObject("stations");
+        String[] StationNames = JSONObject.getNames(listStations);
+        JSONObject StationI = new JSONObject();
+
+        for (String str : StationNames) {
+            StationI = listStations.getJSONObject(str);
+            if (StationI.getString("type").matches("metro")) {
+                String latitude = StationI.getString("lat");
+                String longitude = StationI.getString("lng");
+                System.out.println(latitude + " " + longitude);
+                System.out.println(str);
+
+            }
+            System.out.println(str);
+        }
+        */
 	}
 }
