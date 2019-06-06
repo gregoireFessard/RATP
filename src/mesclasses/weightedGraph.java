@@ -10,16 +10,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import java.lang.*;
 public class weightedGraph {
 
 
 
-    public static HashMap<String,HashMap<String,Integer>> HashmapArray;
+    public static HashMap<String,HashMap<String,Double>> HashmapArray;
 
 
     // constructor
     weightedGraph() throws IOException, JSONException {
-        int weight = 1;
 
 
         ArrayList<String> Stations = new ArrayList<>();
@@ -54,25 +54,13 @@ public class weightedGraph {
         JSONArray jsonArray = obj.getJSONArray("corresp");
         JSONArray list;
         //trick to remove all RER
-        String corr;
-        ArrayList<String> Correspondance = new ArrayList();
-        for(int i = 0; i < jsonArray.length(); i++) {
+        for (int i = 0; i < jsonArray.length(); i++) {
             list = (JSONArray) jsonArray.get(i);
-            for(int j = 0; j < list.length(); j++) {
-                corr = (String) list.get(j);
-                //here is the filter to keep only metro
-                if (!corr.matches("A" + "(.*)") && !corr.matches("B" + "(.*)")) {
-                    Correspondance.add(corr);	//convert to int
+            for (int j = 0; j < list.length(); j++) {
+
+                for (int k = j + 1; k < list.length(); k++) {
+                    addEdge((String) list.get(j), (String) list.get(k));
                 }
-            }
-        }
-        for(int a = 1; a < Correspondance.size(); a++) {
-            //creating edge with this trick :
-            //get 2 stations in Correspondance which must be bound
-            //found their index in the arraylist station
-            //Link them with their own index
-            if (Stations.contains(Correspondance.get(a-1)) && (Stations.contains(Correspondance.get(a)))){
-                addEdge(Correspondance.get(a-1), Correspondance.get(a),weight);
             }
         }
 
@@ -93,7 +81,7 @@ public class weightedGraph {
                 }
                 for(int a = 1; a < Lignes.size(); a++) {
                     //create edge
-                    addEdge(Lignes.get(a-1), Lignes.get(a),weight);
+                    addEdge(Lignes.get(a-1), Lignes.get(a));
                 }
                 Lignes.clear();
             }
@@ -107,7 +95,7 @@ public class weightedGraph {
             Lignes.add((String) listArrets.get(j));
         }
         for(int a = 1; a < Lignes.size(); a++) {
-            addEdge(Lignes.get(a-1), Lignes.get(a),weight);
+            addEdge(Lignes.get(a-1), Lignes.get(a));
         }
         metro = lignes.getJSONObject("7B");
         arrets = metro.getJSONArray("arrets");
@@ -117,20 +105,44 @@ public class weightedGraph {
             Lignes.add((String) listArrets.get(j));
         }
         for(int a = 1; a < Lignes.size(); a++) {
-            addEdge(Lignes.get(a-1), Lignes.get(a),weight);
+            addEdge(Lignes.get(a-1), Lignes.get(a));
         }
 
     }
 
 
     // Adds an edge to an undirected Graph
-    public void addEdge(String src, String dest,int weight)
-    {
-        // Add an edge from src to dest
-        HashmapArray.get(src).put(dest,weight);
+    public void addEdge(String src, String dest)throws IOException, JSONException {
 
-        // Since Graph is undirected, add an edge from dest to src also
-        HashmapArray.get(dest).put(src,weight);
+        @SuppressWarnings("Doublons")
+        JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
+        JSONObject listStations = obj.getJSONObject("stations");
+        JSONObject StationSrc = new JSONObject();
+        @SuppressWarnings("Doublons")
+        JSONObject StationDest = new JSONObject();
+        StationSrc = listStations.getJSONObject(src);
+        StationDest = listStations.getJSONObject(dest);
+
+        Double weight;
+        Double lat1 = Double.parseDouble(StationSrc.getString("lat"));
+        Double long1 = Double.parseDouble(StationSrc.getString("lng"));
+        Double lat2 = Double.parseDouble(StationDest.getString("lat"));
+        Double long2 = Double.parseDouble(StationDest.getString("lng"));
+
+        weight = Math.sqrt(Math.abs(lat1 - lat2)*Math.abs(lat1 - lat2) + Math.abs(long1 - long2)*Math.abs(lat1 - lat2));
+
+        //System.out.println(lat1 + " " + long1 + " " + lat2 + " " + long2 + " :");
+        //System.out.println(weight);
+
+        if (StationSrc.getString("type").matches("metro") && StationDest.getString("type").matches("metro")) {
+            // Add an edge from src to dest
+
+            HashmapArray.get(src).put(dest,weight);
+
+            // Since Graph is undirected, add an edge from dest to src also
+            HashmapArray.get(dest).put(src,weight);
+        }
+
     }
 
     //print the Graph

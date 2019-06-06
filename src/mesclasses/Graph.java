@@ -52,8 +52,6 @@ public class Graph {
         JSONArray jsonArray = obj.getJSONArray("corresp");
         JSONArray list;
         //trick to remove all RER
-        String corr;
-        ArrayList<String> Correspondance = new ArrayList();
         for (int i = 0; i < jsonArray.length(); i++) {
             list = (JSONArray) jsonArray.get(i);
             for (int j = 0; j < list.length(); j++) {

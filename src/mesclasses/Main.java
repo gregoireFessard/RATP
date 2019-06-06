@@ -13,15 +13,15 @@ public class Main {
 	public static void RATP() throws IOException, JSONException {
 
 		//create the Graph
-		Graph g = new Graph();
+        weightedGraph g = new weightedGraph();
 
 		//Graph.printGraph(g);
 
 		//afficher tout le chemin BFS
 		//System.out.println("le chemin complet que parcours l'algorithme");
 		//BFS.bfs(g, 1, 200, Stations);
-		System.out.println("Le chemin le plus court :");
-		g.printGraph();
+		//System.out.println("Le chemin le plus court :");
+		//g.printGraph();
 		//BFS.findShortestPath(g, 1, 200);
 	}
 
