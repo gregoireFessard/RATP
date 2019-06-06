@@ -7,55 +7,62 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class weightedGraph {
 
 
-/*
-    public static HashMap<Integer,Integer> HashmapArray[];
 
-    public weightedGraph(String json) throws JSONException, IOException {
-        ArrayList<Integer> Stations = new ArrayList<>();
-        JSONObject obj = collection.getJSONObjectFromFile(json);
+    public static HashMap<String,HashMap<String,Integer>> HashmapArray;
+
+
+    // constructor
+    weightedGraph() throws IOException, JSONException {
+        int weight = 1;
+
+
+        ArrayList<String> Stations = new ArrayList<>();
+        JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
+
+        /* Initialisation of Stations with the name of each stations    */
         JSONObject stat = obj.getJSONObject("stations");
         String[] names = JSONObject.getNames(stat);
+        String type;
         for(String string : names) {
             //for all stations
-            JSONObject metro = stat.getJSONObject(string);
-            String type = metro.getString("type");
+            type = stat.getJSONObject(string).getString("type");
             //if the station is a metro
             if (type.matches("metro")){
                 //add the station to the list
-                Stations.add(Integer.valueOf(string));
+                Stations.add(string);
             }
         }
-
         //1850 is an exception for us, it's supposed to be a metro but in the JSON it's a rer
         //so we had to add it manually
-        Stations.add(Integer.valueOf("1850"));
+        Stations.add("1850");
 
 
-        // number of vertices
-        HashmapArray = new HashMap[Stations.size()];
-
-        // Create a new list for each vertex
+        /* initialization of adjListArray for each station */
+        HashmapArray = new HashMap<>();
         for(int i = 0; i < Stations.size() ; i++){
-            HashmapArray[i] = new HashMap<>();
+            HashmapArray.put(Stations.get(i),new HashMap<>());
         }
 
+
+        /* Adding the correspondance to the graph */
         JSONArray jsonArray = obj.getJSONArray("corresp");
         JSONArray list;
         //trick to remove all RER
-        String corr = new String();
-        ArrayList<Integer> Correspondance = new ArrayList();
+        String corr;
+        ArrayList<String> Correspondance = new ArrayList();
         for(int i = 0; i < jsonArray.length(); i++) {
             list = (JSONArray) jsonArray.get(i);
-            for(int j = 1; j < list.length(); j++) {
+            for(int j = 0; j < list.length(); j++) {
                 corr = (String) list.get(j);
                 //here is the filter to keep only metro
                 if (!corr.matches("A" + "(.*)") && !corr.matches("B" + "(.*)")) {
-                    Correspondance.add(Integer.valueOf(corr));	//convert to int
+                    Correspondance.add(corr);	//convert to int
                 }
             }
         }
@@ -65,7 +72,7 @@ public class weightedGraph {
             //found their index in the arraylist station
             //Link them with their own index
             if (Stations.contains(Correspondance.get(a-1)) && (Stations.contains(Correspondance.get(a)))){
-                addEdge(Stations.indexOf(Correspondance.get(a-1)), Stations.indexOf(Correspondance.get(a)));
+                addEdge(Correspondance.get(a-1), Correspondance.get(a),weight);
             }
         }
 
@@ -73,7 +80,7 @@ public class weightedGraph {
         JSONObject metro = new JSONObject();
         JSONArray arrets = new JSONArray();
         JSONArray listArrets = new JSONArray();
-        ArrayList<Integer> Lignes = new ArrayList();
+        ArrayList<String> Lignes = new ArrayList();
         for(int i = 1; i < 15; i++) {
             metro = lignes.getJSONObject(Integer.toString(i));
             arrets = metro.getJSONArray("arrets");
@@ -82,11 +89,11 @@ public class weightedGraph {
                 listArrets = (JSONArray) arrets.get(k);
                 for(int j = 0; j < listArrets.length(); j++) {
                     //loop for stations metro
-                    Lignes.add(Integer.valueOf((String) listArrets.get(j)));
+                    Lignes.add((String) listArrets.get(j));
                 }
                 for(int a = 1; a < Lignes.size(); a++) {
                     //create edge
-                    addEdge(Stations.indexOf(Lignes.get(a-1)), Stations.indexOf(Lignes.get(a)));
+                    addEdge(Lignes.get(a-1), Lignes.get(a),weight);
                 }
                 Lignes.clear();
             }
@@ -97,45 +104,46 @@ public class weightedGraph {
         listArrets = (JSONArray) arrets.get(0);
         Lignes.clear();
         for(int j = 0; j < listArrets.length(); j++) {
-            Lignes.add(Integer.valueOf((String) listArrets.get(j)));
+            Lignes.add((String) listArrets.get(j));
         }
         for(int a = 1; a < Lignes.size(); a++) {
-            addEdge(Stations.indexOf(Lignes.get(a-1)), Stations.indexOf(Lignes.get(a)));
+            addEdge(Lignes.get(a-1), Lignes.get(a),weight);
         }
         metro = lignes.getJSONObject("7B");
         arrets = metro.getJSONArray("arrets");
         listArrets = (JSONArray) arrets.get(0);
         Lignes.clear();
         for(int j = 0; j < listArrets.length(); j++) {
-            Lignes.add(Integer.valueOf((String) listArrets.get(j)));
+            Lignes.add((String) listArrets.get(j));
         }
         for(int a = 1; a < Lignes.size(); a++) {
-            addEdge(Stations.indexOf(Lignes.get(a-1)), Stations.indexOf(Lignes.get(a)));
+            addEdge(Lignes.get(a-1), Lignes.get(a),weight);
         }
+
     }
 
+
     // Adds an edge to an undirected Graph
-    public void addEdge(int src, int dest,int weight)
+    public void addEdge(String src, String dest,int weight)
     {
         // Add an edge from src to dest
-        HashmapArray[src].put(dest,weight);
+        HashmapArray.get(src).put(dest,weight);
 
         // Since Graph is undirected, add an edge from dest to src also
-        HashmapArray[dest].put(src,weight);
+        HashmapArray.get(dest).put(src,weight);
     }
 
     //print the Graph
-    public void printGraph(Graph graph)
-    {
-        for(int v = 0; v < graph.V; v++)
-        {
-            System.out.println("Adjacency list of vertex "+ v);
-            for(Map.Entry<Integer,Integer> vert: HashmapArray[v].entrySet()){
-                System.out.print(" -> "+ vert.getKey() + " + " + vert.getValue());
+    public void printGraph() throws IOException, JSONException {
+/*        JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
+        JSONObject stat = obj.getJSONObject("stations");
+
+        for(Map.Entry<String,HashMap<>> vertex: HashmapArray.entrySet()) {
+            System.out.println("Stations near : "+ stat.getJSONObject(vertex.getKey()).getString("nom"));
+            for (String s : vertex.getValue()){
+                System.out.print(stat.getJSONObject(s).getString("nom")+ " + ");
             }
             System.out.println("\n");
-        }
+        }*/
     }
-*/
-
 }
