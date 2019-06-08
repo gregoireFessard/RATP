@@ -143,20 +143,14 @@ public class Dijkstra {
 
     }
 
-    public static void PrinShortestPath(String sourceVertex, String destVertex) throws IOException, JSONException {
+    public static void PrintShortestPath(String sourceVertex, String destVertex) throws IOException, JSONException {
         JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
         JSONObject stat = obj.getJSONObject("stations");
 
         System.out.println("The shortest path form " + sourceVertex + " to " + destVertex + " is : ");
-        ArrayList<String> shortestPathList = new ArrayList<String>();
-        shortestPathList.add(destVertex);
 
-        String currentSrc = destVertex;
-        while (!sourceVertex.matches(currentSrc)) {
+        ArrayList<String> shortestPathList = GetShortestPath(sourceVertex, destVertex);
 
-            currentSrc = parentNodes.get(currentSrc);
-            shortestPathList.add(0,currentSrc);
-        }
         System.out.print("[");
         for(String node : shortestPathList)
         {
@@ -165,5 +159,15 @@ public class Dijkstra {
         }
         System.out.print("]");
     }
+    public static ArrayList<String> GetShortestPath(String sourceVertex, String destVertex) throws IOException, JSONException {
+        ArrayList<String> shortestPathList = new ArrayList<String>();
+        shortestPathList.add(destVertex);
 
+        String currentSrc = destVertex;
+        while (!sourceVertex.matches(currentSrc)) {
+            currentSrc = parentNodes.get(currentSrc);
+            shortestPathList.add(0,currentSrc);
+        }
+        return shortestPathList;
+    }
 }
