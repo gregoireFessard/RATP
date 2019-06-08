@@ -153,6 +153,7 @@ public class Dijkstra {
 
         String currentSrc = destVertex;
         while (!sourceVertex.matches(currentSrc)) {
+
             currentSrc = parentNodes.get(currentSrc);
             shortestPathList.add(0,currentSrc);
         }
