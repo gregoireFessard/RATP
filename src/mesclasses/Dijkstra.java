@@ -8,10 +8,10 @@ import java.util.*;
 
 public class Dijkstra {
 
-    public static HashMap<String,String> parentNodes;
-    public static HashMap<String, Double> distance;
+    public HashMap<String,String> parentNodes;
+    public HashMap<String, Double> distance;
 
-    public static void DiDi(String sourceVertex, HashMap<String, HashMap<String, Double>> HashmapArray) {
+    public Dijkstra(String sourceVertex, HashMap<String,HashMap<String,Double>> HashmapArray) {
 
         parentNodes = new HashMap<>();
 
@@ -113,7 +113,7 @@ public class Dijkstra {
         //printDijkstra(distance, sourceVertex);
     }
 
-    static class PairComparator implements Comparator {
+    class PairComparator implements Comparator {
 
         // Implements the compare method. o1 and o2 are really instances of
         // java.util.AbstractMap.SimpleEntry where the key and the value are both of type int. Returns the
@@ -134,7 +134,7 @@ public class Dijkstra {
         }
     }
 
-    public static void printDijkstra(HashMap<String, Double> distance, String sourceVertex) {
+    public void printDijkstra(HashMap<String, Double> distance, String sourceVertex) {
         System.out.println("Dijkstra Algorithm: (Adjacency List + TreeSet)");
         for (Map.Entry<String, Double> vertex : distance.entrySet()) {
             System.out.println(
@@ -143,7 +143,7 @@ public class Dijkstra {
 
     }
 
-    public static void PrintShortestPath(String sourceVertex, String destVertex) throws IOException, JSONException {
+    public void PrintShortestPath(String sourceVertex, String destVertex) throws IOException, JSONException {
         JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
         JSONObject stat = obj.getJSONObject("stations");
 
@@ -159,7 +159,7 @@ public class Dijkstra {
         }
         System.out.print("]");
     }
-    public static ArrayList<String> GetShortestPath(String sourceVertex, String destVertex) throws IOException, JSONException {
+    public ArrayList<String> GetShortestPath(String sourceVertex, String destVertex) throws IOException, JSONException {
         ArrayList<String> shortestPathList = new ArrayList<String>();
         shortestPathList.add(destVertex);
 

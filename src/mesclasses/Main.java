@@ -56,11 +56,12 @@ public class Main {
 		ArrayList<String> stat = graph.TableStat;
 		ArrayList<String> Shortestpath = new ArrayList<String>();
 		weightedGraph ClusterWeight = new weightedGraph(stat, "/reseau.json");
+		Dijkstra dij;
 
 		for(int i =0; i<(stat.size()-1);i++){
-			Dijkstra.DiDi(stat.get(i), graph.HashmapArray);
+			dij = new Dijkstra(stat.get(i), graph.HashmapArray);
 			for (int j =i+1; j<stat.size();j++){
-				Shortestpath = Dijkstra.GetShortestPath(stat.get(i), stat.get(j));
+				Shortestpath = dij.GetShortestPath(stat.get(i), stat.get(j));
 
 				for( int k = 0;k <(Shortestpath.size()-1);k++){
 					ClusterWeight.addToEdge(stat.get(k), stat.get(k+1), 1.0);
