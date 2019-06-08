@@ -2,6 +2,8 @@ package mesclasses;
 
 import java.util.ArrayList;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,9 +27,32 @@ public class Main {
 		//BFS.findShortestPath(g, 1, 200);
 	}
 
+	public static void ClusterRatp() throws IOException, JSONException {
+
+		//create the Graph
+		//weightedGraph g = new weightedGraph();
+
+		//Map v = weightedGraph.HashmapArray.get("1621");
+
+
+		//Graph.printGraph(g);
+
+		//afficher tout le chemin BFS
+		//System.out.println("le chemin complet que parcours l'algorithme");
+		//BFS.bfs(g, 1, 200, Stations);
+		//System.out.println(v);
+		//g.printGraph();
+		//BFS.findShortestPath(g, 1, 200);
+
+		int vertices = 6;
+		weightedGraph graph = new weightedGraph();
+		Dijkstra("1768", graph.HashmapArray);
+	}
+
+
 	public static void main(String[] args) throws JSONException,IOException {
 
-		RATP();
+		ClusterRatp();
 		/*
         JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
 
