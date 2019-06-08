@@ -147,7 +147,7 @@ public class weightedGraph {
 
     //print the Graph
     public void printGraph() throws IOException, JSONException {
-/*        JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
+/*      JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
         JSONObject stat = obj.getJSONObject("stations");
 
         for(Map.Entry<String,HashMap<>> vertex: HashmapArray.entrySet()) {

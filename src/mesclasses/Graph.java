@@ -54,7 +54,7 @@ public class Graph {
         //trick to remove all RER
         for (int i = 0; i < jsonArray.length(); i++) {
             list = (JSONArray) jsonArray.get(i);
-            for (int j = 0; j < list.length(); j++) {
+            for (int j = 0; j < list.length()-1; j++) {
 
                 for (int k = j + 1; k < list.length(); k++) {
                     addEdge((String) list.get(j), (String) list.get(k));
