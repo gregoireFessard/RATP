@@ -15,9 +15,9 @@ public class weightedGraph {
 
 
 
-    public static HashMap<String,HashMap<String,Double>> HashmapArray;
+    public HashMap<String,HashMap<String,Double>> HashmapArray;
     public String path;
-
+    public ArrayList<String> TableStat;
 
     // constructor
     weightedGraph(String _path) throws IOException, JSONException {
@@ -39,7 +39,7 @@ public class weightedGraph {
                 Stations.add(string);
             }
         }
-
+        TableStat = Stations;
 
         /* initialization of adjListArray for each station */
         HashmapArray = new HashMap<>();
@@ -118,4 +118,5 @@ public class weightedGraph {
 
         return Math.sqrt((Math.abs(lat1 - lat2)*Math.abs(long1 - long2)) + (Math.abs(long1 - long2)*Math.abs(lat1 - lat2)));
     }
+
 }
