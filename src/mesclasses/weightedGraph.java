@@ -15,33 +15,31 @@ public class weightedGraph {
 
 
 
-    public static HashMap<String,HashMap<String,Double>> HashmapArray;
-
+    public HashMap<String,HashMap<String,Double>> HashmapArray;
+    public String path;
+    public ArrayList<String> TableStat;
 
     // constructor
-    weightedGraph() throws IOException, JSONException {
+    weightedGraph(String _path) throws IOException, JSONException {
 
-
-        ArrayList<String> Stations = new ArrayList<>();
+        this.path = _path;
         JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
 
         /* Initialisation of Stations with the name of each stations    */
+        ArrayList<String> Stations = new ArrayList<String>();
         JSONObject stat = obj.getJSONObject("stations");
         String[] names = JSONObject.getNames(stat);
         String type;
-        for(String string : names) {
+        for (String string : names) {
             //for all stations
             type = stat.getJSONObject(string).getString("type");
             //if the station is a metro
-            if (type.matches("metro")){
+            if (type.matches("metro") || type.matches("rer")) {
                 //add the station to the list
                 Stations.add(string);
             }
         }
-        //1850 is an exception for us, it's supposed to be a metro but in the JSON it's a rer
-        //so we had to add it manually
-        Stations.add("1850");
-
+        TableStat = Stations;
 
         /* initialization of adjListArray for each station */
         HashmapArray = new HashMap<>();
@@ -56,106 +54,69 @@ public class weightedGraph {
         //trick to remove all RER
         for (int i = 0; i < jsonArray.length(); i++) {
             list = (JSONArray) jsonArray.get(i);
-            for (int j = 0; j < list.length(); j++) {
-
+            for (int j = 0; j < list.length()-1; j++) {
                 for (int k = j + 1; k < list.length(); k++) {
-                    addEdge((String) list.get(j), (String) list.get(k));
+                    if (Stations.contains(list.get(j)) &&  Stations.contains(list.get(k)))
+                        addEdge((String) list.get(j), (String) list.get(k),getDistance( stat.getJSONObject((String)list.get(j)), stat.getJSONObject((String)list.get(k))));
                 }
             }
         }
 
-        JSONObject lignes = obj.getJSONObject("lignes");
-        JSONObject metro = new JSONObject();
-        JSONArray arrets = new JSONArray();
-        JSONArray listArrets = new JSONArray();
-        ArrayList<String> Lignes = new ArrayList();
-        for(int i = 1; i < 15; i++) {
-            metro = lignes.getJSONObject(Integer.toString(i));
-            arrets = metro.getJSONArray("arrets");
-            for(int k = 0; k < arrets.length(); k++) {
-                //loop for "lignes"
+        /* Selecting the lignes needed */
+        ArrayList<String> ligne = new ArrayList<>();
+        for (int i = 1; i < 15; i++) {
+            ligne.add(Integer.toString(i));
+        }
+        ligne.add("3B");
+        ligne.add("7B");
+        ligne.add("A");
+        ligne.add("B");
+
+        /* Adding the lignes to the graph */
+        JSONObject lignesJson = obj.getJSONObject("lignes");
+        JSONArray listArrets;
+        JSONArray arrets;
+
+        for (String s : ligne) {
+            arrets = lignesJson.getJSONObject(s).getJSONArray("arrets");
+            for (int k = 0; k < arrets.length(); k++) {
                 listArrets = (JSONArray) arrets.get(k);
-                for(int j = 0; j < listArrets.length(); j++) {
-                    //loop for stations metro
-                    Lignes.add((String) listArrets.get(j));
+                for (int j = 0; j < listArrets.length()-1; j++) {
+                    addEdge((String) listArrets.get(j), (String) listArrets.get(j+1),getDistance( stat.getJSONObject((String)listArrets.get(j)), stat.getJSONObject((String)listArrets.get(j+1))));
                 }
-                for(int a = 1; a < Lignes.size(); a++) {
-                    //create edge
-                    addEdge(Lignes.get(a-1), Lignes.get(a));
-                }
-                Lignes.clear();
             }
-        }
-        //add an exception for 3B and 7B metro which can't be in the precedent loop
-        metro = lignes.getJSONObject("3B");
-        arrets = metro.getJSONArray("arrets");
-        listArrets = (JSONArray) arrets.get(0);
-        Lignes.clear();
-        for(int j = 0; j < listArrets.length(); j++) {
-            Lignes.add((String) listArrets.get(j));
-        }
-        for(int a = 1; a < Lignes.size(); a++) {
-            addEdge(Lignes.get(a-1), Lignes.get(a));
-        }
-        metro = lignes.getJSONObject("7B");
-        arrets = metro.getJSONArray("arrets");
-        listArrets = (JSONArray) arrets.get(0);
-        Lignes.clear();
-        for(int j = 0; j < listArrets.length(); j++) {
-            Lignes.add((String) listArrets.get(j));
-        }
-        for(int a = 1; a < Lignes.size(); a++) {
-            addEdge(Lignes.get(a-1), Lignes.get(a));
         }
 
     }
 
 
     // Adds an edge to an undirected Graph
-    public void addEdge(String src, String dest)throws IOException, JSONException {
+    public void addEdge(String src, String dest,Double weight){
+        HashmapArray.get(src).put(dest,weight);
+        HashmapArray.get(dest).put(src,weight);
+    }
 
-        @SuppressWarnings("Doublons")
+    //print the Graph
+    public void printGraph() throws IOException, JSONException {
         JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
-        JSONObject listStations = obj.getJSONObject("stations");
-        JSONObject StationSrc = new JSONObject();
-        @SuppressWarnings("Doublons")
-        JSONObject StationDest = new JSONObject();
-        StationSrc = listStations.getJSONObject(src);
-        StationDest = listStations.getJSONObject(dest);
+        JSONObject stat = obj.getJSONObject("stations");
 
-        Double weight;
+        for(Map.Entry<String,HashMap<String,Double>> vertex: HashmapArray.entrySet()) {
+            System.out.println("Stations near : "+ stat.getJSONObject(vertex.getKey()).getString("nom"));
+            for (Map.Entry<String,Double> s : vertex.getValue().entrySet()){
+                System.out.print(stat.getJSONObject(s.getKey()).getString("nom")+ "("+s.getValue()+") + ");
+            }
+            System.out.println("\n");
+        }
+    }
+
+    public double getDistance(JSONObject StationSrc, JSONObject StationDest) throws JSONException {
         Double lat1 = Double.parseDouble(StationSrc.getString("lat"));
         Double long1 = Double.parseDouble(StationSrc.getString("lng"));
         Double lat2 = Double.parseDouble(StationDest.getString("lat"));
         Double long2 = Double.parseDouble(StationDest.getString("lng"));
 
-        weight = Math.sqrt(Math.abs(lat1 - lat2)*Math.abs(lat1 - lat2) + Math.abs(long1 - long2)*Math.abs(lat1 - lat2));
-
-        //System.out.println(lat1 + " " + long1 + " " + lat2 + " " + long2 + " :");
-        //System.out.println(weight);
-
-        if (StationSrc.getString("type").matches("metro") && StationDest.getString("type").matches("metro")) {
-            // Add an edge from src to dest
-
-            HashmapArray.get(src).put(dest,weight);
-
-            // Since Graph is undirected, add an edge from dest to src also
-            HashmapArray.get(dest).put(src,weight);
-        }
-
+        return Math.sqrt((Math.abs(lat1 - lat2)*Math.abs(long1 - long2)) + (Math.abs(long1 - long2)*Math.abs(lat1 - lat2)));
     }
 
-    //print the Graph
-    public void printGraph() throws IOException, JSONException {
-/*      JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
-        JSONObject stat = obj.getJSONObject("stations");
-
-        for(Map.Entry<String,HashMap<>> vertex: HashmapArray.entrySet()) {
-            System.out.println("Stations near : "+ stat.getJSONObject(vertex.getKey()).getString("nom"));
-            for (String s : vertex.getValue()){
-                System.out.print(stat.getJSONObject(s).getString("nom")+ " + ");
-            }
-            System.out.println("\n");
-        }*/
-    }
 }

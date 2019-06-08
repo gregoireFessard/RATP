@@ -1,10 +1,20 @@
 package mesclasses;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.*;
 
 public class Dijkstra {
 
-    public void Dijkstra(String sourceVertex, HashMap<String, HashMap<String, Double>> HashmapArray) {
+    public static HashMap<String,String> parentNodes;
+    public static HashMap<String, Double> distance;
+
+    public static void DiDi(String sourceVertex, HashMap<String, HashMap<String, Double>> HashmapArray) {
+
+        parentNodes = new HashMap<>();
+
         // Creates a new empty HashSet object to store the unvisited vertices
         //
         HashSet unvisitedVertices = new HashSet();
@@ -17,7 +27,7 @@ public class Dijkstra {
         // Creates a new empty HashMap object to store the distance to each vertex
         // (key=vertex, value=distance)
         //
-        HashMap<String, Double> distance = new HashMap();
+        distance = new HashMap();
 
         // Initializes all the distances to "infinity" (use the value
         // Integer.MAX_VALUE for "infinity")
@@ -36,7 +46,7 @@ public class Dijkstra {
 
         // Creates a new pair (class SimpleEntry) of (distance, vertex) for the sourceVertex
         //
-        AbstractMap.SimpleEntry p0 = new AbstractMap.SimpleEntry(distance.get(sourceVertex), 0);
+        AbstractMap.SimpleEntry p0 = new AbstractMap.SimpleEntry(distance.get(sourceVertex), sourceVertex);
 
         // Adds the pair to the treeSet
         treeSet.add(p0);
@@ -85,6 +95,8 @@ public class Dijkstra {
                         if (newDistance < currentDistance) {
                             // Creates a new pair (SimpleEntry object) for (newDistance, destination)
                             //
+                            parentNodes.put(destination,extractedVertex);
+
                             AbstractMap.SimpleEntry p = new AbstractMap.SimpleEntry(newDistance, destination);
 
                             // Adds the pair object to the treeSet
@@ -98,7 +110,7 @@ public class Dijkstra {
                 }
             }
         }
-        printDijkstra(distance, sourceVertex);
+        //printDijkstra(distance, sourceVertex);
     }
 
     static class PairComparator implements Comparator {
@@ -111,22 +123,46 @@ public class Dijkstra {
         public int compare(Object o1, Object o2) {
             // sort using distance values
 
-            int key1 = (int) ((AbstractMap.SimpleEntry) o1).getKey();
-            int key2 = (int) ((AbstractMap.SimpleEntry) o2).getKey();
-            return key1 - key2;
+            Double key1 = (Double) ((AbstractMap.SimpleEntry) o1).getKey();
+            Double key2 = (Double) ((AbstractMap.SimpleEntry) o2).getKey();
+            if (key1 < key2){
+                return -1;
+            }
+            else{
+                return 1;
+            }
         }
     }
 
-    public void printDijkstra(HashMap<String, Double> distance, String sourceVertex) {
+    public static void printDijkstra(HashMap<String, Double> distance, String sourceVertex) {
         System.out.println("Dijkstra Algorithm: (Adjacency List + TreeSet)");
         for (Map.Entry<String, Double> vertex : distance.entrySet()) {
             System.out.println(
                     "Source Vertex: " + sourceVertex + " to vertex " + vertex.getKey() + " distance: " + distance.get(vertex.getKey()));
         }
+
     }
 
-    public void toVertex(HashMap distance, String sourceVertex, String destVertex) {
-        System.out.println("The shortest distance form " + sourceVertex + " to " + destVertex + " is : " + distance.get(destVertex));
+    public static void PrinShortestPath(String sourceVertex, String destVertex) throws IOException, JSONException {
+        JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
+        JSONObject stat = obj.getJSONObject("stations");
+
+        System.out.println("The shortest path form " + sourceVertex + " to " + destVertex + " is : ");
+        ArrayList<String> shortestPathList = new ArrayList<String>();
+        shortestPathList.add(destVertex);
+
+        String currentSrc = destVertex;
+        while (!sourceVertex.matches(currentSrc)) {
+            currentSrc = parentNodes.get(currentSrc);
+            shortestPathList.add(0,currentSrc);
+        }
+        System.out.print("[");
+        for(String node : shortestPathList)
+        {
+            System.out.print(stat.getJSONObject(node).getString("nom"));
+            System.out.print("->");
+        }
+        System.out.print("]");
     }
 
 }
