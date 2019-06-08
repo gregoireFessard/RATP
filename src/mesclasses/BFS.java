@@ -1,133 +1,83 @@
 package mesclasses;
 
+import java.io.IOException;
 import java.util.*;
 
 import mesclasses.Graph;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class BFS {
-	
-/*	public static ArrayList<Integer> bfsUtil(Graph G, int start, int[] prev, int[] dist, boolean[] mark) {
 
-	// prints BFS traversal from a given source s
-	
-		// Create a queue for BFS 
-		LinkedList<Integer> queue = new LinkedList<Integer>(); 
-		ArrayList<Integer> ListResult = new ArrayList<Integer>();
-		// Mark the current node as visited and enqueue it 
-		mark[start]=true;
-		queue.add(start);
-
-		while (queue.size() != 0) { 
-			// Dequeue a vertex from queue and print it 
-			start = queue.poll();
-			ListResult.add(start);
-	
-			// Get all adjacent vertices of the dequeued vertex s 
-			// If a adjacent has not been visited, then mark it 
-			// visited and enqueue it 
-			Iterator<Integer> i = Graph.adjListArray[start].listIterator();
-			while (i.hasNext()) {	
-				int cptVertex = 1;	//number of vertex before i
-    			int n = i.next();
-    			if (!mark[n]) { 
-    				mark[n] = true;	//if the vertex is visited
-    				dist[n] = n-cptVertex;	//distance in number of vertex
-    				cptVertex = cptVertex + 1;
-    				queue.add(n); 
-    			}
-			}
-		}
-		return ListResult;
-	}
-
-	static void bfs(Graph G, int start, int end, ArrayList<Integer> St) {
-		boolean marked[] = new boolean[St.size()]; //set to true if v has been visited
-	    int previous[] = new int[St.size()-1]; //indicates the preceding vertex
-	    int distance[] = new int[St.size()]; //represents the distance between s and v
-		ArrayList<Integer> ListResult = bfsUtil(G, start, previous, distance, marked);
-		ListResult.add(end);
-		System.out.println(ListResult);
-		int Cpt = 1;
-		previous[Cpt] = start;
-		while (Cpt != end) {
-			Cpt += 1;
-			previous[Cpt] = ListResult.get(Cpt-1);
-		}
-	}
-
-	public static boolean isNeighbor(int u, int v)
+	public static ArrayList<String> doBFSShortestPath(Graph graph, String source, String dest)
 	{
-		if(Graph.adjListArray[u]==null)
-			return false;
-		return Graph.adjListArray[u].contains(v);
-
-	}
-
-	public static LinkedList<Integer> getOutEdges(int u)
-	{
-		return Graph.adjListArray[u];
-	}
-
-	public static ArrayList<Integer> doBFSShortestPath(Graph graph, int source, int dest)
-	{
-		ArrayList<Integer> shortestPathList = new ArrayList<Integer>();
-		HashMap<Integer, Boolean> visited = new HashMap<Integer, Boolean>();
-
 		if (source == dest)
 			return null;
-		Queue<Integer> queue = new LinkedList<Integer>();
-		Stack<Integer> pathStack = new Stack<Integer>();
+
+		Queue<String> queue = new LinkedList<String>();
+		HashMap<String,String> parentNodes = new HashMap<>();
+        HashSet visitedVertices = new HashSet();
 
 		queue.add(source);
-		pathStack.add(source);
-		visited.put(source, true);
+        visitedVertices.add(source);
 
+		loop:
 		while(!queue.isEmpty())
-		{
-			int u = queue.poll();
-			LinkedList<Integer> adjList = getOutEdges(u);
-
-			for(int v : adjList)
+        {
+            String u = queue.poll();
+			LinkedList<String> adjList = graph.adjListArray.get(u);
+			for(String v : adjList)
 			{
-				if(!visited.containsKey(v))
+				if(!visitedVertices.contains(v))
 				{
 					queue.add(v);
-					visited.put(v, true);
-					pathStack.add(v);
-					if(u == dest)
-						break;
+                    visitedVertices.add(v);
+                    parentNodes.put(v,u);
+					if(v == dest)
+						break loop;
 				}
 			}
 		}
 
+		//To find the path, we backtrack
 
-		//To find the path
-		int node, currentSrc=dest;
+        ArrayList<String> shortestPathList = new ArrayList<String>();
 		shortestPathList.add(dest);
-		while(!pathStack.isEmpty())
-		{
-			node = pathStack.pop();
-			if(isNeighbor(currentSrc, node))
-			{
-				shortestPathList.add(node);
-				currentSrc = node;
-				if(node == source)
-					break;
-			}
-		}
+
+        String currentSrc = dest;
+		while (!source.matches(currentSrc)) {
+            currentSrc = parentNodes.get(currentSrc);
+            shortestPathList.add(0,currentSrc);
+        }
 
 		return shortestPathList;
 	}
-	public static void findShortestPath(Graph graph, int source, int dest)
-	{
 
-		ArrayList<Integer> shortestPathList =  doBFSShortestPath(graph, source, dest);
 
+	public static void findShortestPath(Graph graph, String source, String dest) throws IOException, JSONException {
+        JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
+        JSONObject stat = obj.getJSONObject("stations");
+
+		ArrayList<String> shortestPathList =  doBFSShortestPath(graph, source, dest);
 		System.out.print("[");
-		for(int node : shortestPathList)
+		for(String node : shortestPathList)
 		{
-			System.out.print(node+" ");
+            System.out.print(stat.getJSONObject(node).getString("nom"));
+            JSONObject lignes  = stat.getJSONObject(node).getJSONObject("lignes");
+            String[] names = JSONObject.getNames(lignes);
+            for (String ligneName : names)
+            {
+                System.out.print( ":" +ligneName);
+                JSONArray metrer =  lignes.getJSONArray(ligneName);
+                for (int i=0;i<metrer.length();i++)
+                {
+                    System.out.print( "/" +metrer.get(i));
+                }
+
+            }
+            System.out.print("->");
 		}
 		System.out.print("]");
-	}*/
+	}
 }
