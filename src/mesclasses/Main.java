@@ -13,7 +13,7 @@ public class Main {
 	public static void RATP() throws IOException, JSONException {
 
 		//create the Graph
-		weightedGraph g = new weightedGraph("/reseau.json");
+		Graph g = new Graph("/reseau.json");
 
 		//Graph.printGraph(g);
 
@@ -22,7 +22,7 @@ public class Main {
 		//BFS.bfs(g, 1, 200, Stations);
 		//System.out.println("Le chemin le plus court :");
 		//g.printGraph();
-		//BFS.findShortestPath(g, 1, 200);
+		BFS.findShortestPath(g, "1992", "1941");
 		//System.out.print(Math.sqrt(Math.abs(48.8946326891969 - 48.8972870603971)*Math.abs(2.34709106533484 - 2.34477887737988) + Math.abs(2.34709106533484 - 2.34477887737988)*Math.abs(48.8946326891969 - 48.8972870603971)));
 	}
 
