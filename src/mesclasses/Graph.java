@@ -101,13 +101,19 @@ public class Graph {
     public void printGraph() throws IOException, JSONException {
         JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
         JSONObject stat = obj.getJSONObject("stations");
+        Boolean b;
 
         for (Map.Entry<String, LinkedList<String>> vertex : adjListArray.entrySet()) {
-            System.out.println("Stations near : " + stat.getJSONObject(vertex.getKey()).getString("nom"));
+            System.out.print(stat.getJSONObject(vertex.getKey()).getString("nom") + " : [ ");
+            b = false;
             for (String s : vertex.getValue()) {
-                System.out.print(stat.getJSONObject(s).getString("nom") + " + ");
+                if (b)
+                    System.out.print(" | ");
+                System.out.print(stat.getJSONObject(s).getString("nom"));
+
+                b= true;
             }
-            System.out.println("\n");
+            System.out.println(" ]");
         }
     }
 }

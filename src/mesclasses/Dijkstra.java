@@ -1,5 +1,6 @@
 package mesclasses;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -147,17 +148,32 @@ public class Dijkstra {
         JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
         JSONObject stat = obj.getJSONObject("stations");
 
-        System.out.println("The shortest path form " + sourceVertex + " to " + destVertex + " is : ");
 
         ArrayList<String> shortestPathList = GetShortestPath(sourceVertex, destVertex);
 
-        System.out.print("[");
+        System.out.print("\n \n");
+        System.out.println("Djikstra : Fastest path from " + stat.getJSONObject(sourceVertex).getString("nom") + " to " + stat.getJSONObject(destVertex).getString("nom") + " - Total distance : " + distance.get(destVertex).intValue() + "m");
+
+        Double dist =0.0;
         for(String node : shortestPathList)
         {
+            System.out.print(" ->");
             System.out.print(stat.getJSONObject(node).getString("nom"));
-            System.out.print("->");
+            JSONObject lignes  = stat.getJSONObject(node).getJSONObject("lignes");
+            String[] names = JSONObject.getNames(lignes);
+            for (String ligneName : names)
+            {
+                JSONArray metrer =  lignes.getJSONArray(ligneName);
+                for (int i=0;i<metrer.length();i++)
+                {
+                    System.out.print( "(" +ligneName + " " +  metrer.get(i) + ")");
+                }
+            }
+            System.out.print(" distance :" +  (distance.get(node).intValue() - dist.intValue()) + "m");
+            dist = distance.get(node);
+            System.out.print("\n");
         }
-        System.out.print("]");
+        System.out.print("\n \n");
     }
     public ArrayList<String> GetShortestPath(String sourceVertex, String destVertex) throws IOException, JSONException {
         ArrayList<String> shortestPathList = new ArrayList<String>();

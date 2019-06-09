@@ -60,24 +60,27 @@ public class BFS {
         JSONObject stat = obj.getJSONObject("stations");
 
 		ArrayList<String> shortestPathList =  doBFSShortestPath(graph, source, dest);
-		System.out.print("[");
+		System.out.print("\n \n");
+		System.out.println("BFS : Fastest path from " + stat.getJSONObject(source).getString("nom") + " to " + stat.getJSONObject(dest).getString("nom"));
+
+
 		for(String node : shortestPathList)
 		{
+			System.out.print(" ->");
             System.out.print(stat.getJSONObject(node).getString("nom"));
             JSONObject lignes  = stat.getJSONObject(node).getJSONObject("lignes");
-            String[] names = JSONObject.getNames(lignes);
-            for (String ligneName : names)
-            {
-                System.out.print( ":" +ligneName);
-                JSONArray metrer =  lignes.getJSONArray(ligneName);
-                for (int i=0;i<metrer.length();i++)
-                {
-                    System.out.print( "/" +metrer.get(i));
-                }
+			String[] names = JSONObject.getNames(lignes);
+			for (String ligneName : names)
+			{
+				JSONArray metrer =  lignes.getJSONArray(ligneName);
+				for (int i=0;i<metrer.length();i++)
+				{
+					System.out.print( "(" +ligneName + " " +  metrer.get(i) + ")");
+				}
 
-            }
-            System.out.print("->");
+			}
+            System.out.print("\n");
 		}
-		System.out.print("]");
+		System.out.print("\n \n");
 	}
 }
