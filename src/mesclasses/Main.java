@@ -41,30 +41,18 @@ public class Main {
         return Table_cluster;
     }
 
-    public static void ClusterCenter (HashMap<String, Double> Cluster, weightedGraph graph) throws IOException {
-        JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
+    public static void ClusterCenter(HashMap<String, Double> Cluster, weightedGraph graph) throws IOException {
 
-        JSONObject stat = obj.getJSONObject("stations");
-        //JSONArray list = (JSONArray) jsonArray.get(i);
-
-        ArrayList<Double> cluster2 = new ArrayList<Double>();
-        ArrayList<Double> cluster3 = new ArrayList<Double>();
-        ArrayList<Double> cluster5 = new ArrayList<Double>();
-        ArrayList<Double> cluster4 = new ArrayList<Double>();
-        cluster2.add(0.0);
-        cluster2.add(0.0);
-        cluster3.add(0.0);
-        cluster3.add(0.0);
-        cluster4.add(0.0);
-        cluster4.add(0.0);
-        cluster5.add(0.0);
-        cluster5.add(0.0);
-
-        for (Map.Entry<String, Double> vertex : Cluster.entrySet()) {
-            if (vertex.getValue()==2.0){
-                //stat.getJSONObject((String)list.get(vertex.getKey()));
-            }
-        }
+		for(int i =1; i<13; i++) {
+			System.out.println("Stations from cluster number " + i + " are :");
+			for (Map.Entry<String, Double> vertex : Cluster.entrySet()) {
+				if (vertex.getValue() == i) {
+					System.out.print(vertex.getKey() + ", ");
+				}
+			}
+			System.out.println("\n");
+		}
+		System.out.println("There are many other clusters but they just contain one element, so they are not printed");
     }
 
     public static void ClusterRatp() throws IOException, JSONException {
@@ -116,10 +104,10 @@ public class Main {
 
         for (Map.Entry<String, HashMap<String, Double>> vertex : ClusterWeight.HashmapArray.entrySet()) {
             for (Map.Entry<String, Double> poids : vertex.getValue().entrySet()) {
-                if (poids.getValue() > 5600) {
+                if (poids.getValue() > 5500) {
                     nbr_edge_sup += 1;
                     somme_sup += poids.getValue();
-                    System.out.println(vertex.getKey() + " " + poids.getKey() + " " + poids.getValue());
+                    //System.out.println(vertex.getKey() + " " + poids.getKey() + " " + poids.getValue());
                     toremove.add(poids.getKey());
                 }
                 somme += poids.getValue();
@@ -132,14 +120,6 @@ public class Main {
             toremove.clear();
         }
 
-        HashMap<String, Double> cluster = new HashMap();
-
-        for (int i = 0; i < stat.size(); i++) {
-            cluster.put(stat.get(i), 0.0);
-        }
-
-
-        dij = new Dijkstra("1621", ClusterWeight.HashmapArray);
 
         HashMap<String, Double> Table_cluster = new HashMap<String, Double>();
 
@@ -147,18 +127,18 @@ public class Main {
             Table_cluster.put(stat.get(i), 0.0);
         }
 
-        System.out.println(Cluster(ClusterWeight, Table_cluster));
+		ClusterCenter(Cluster(ClusterWeight, Table_cluster), ClusterWeight);
 
 
         double poids_moy = somme / (2 * (nbr_edge));
         double poids_moy_sup = somme_sup / (2 * (nbr_edge_sup));
 
         //ClusterWeight.printGraph();
-        System.out.println("le nbr d'elements est :" + nbr_edge);
-        System.out.println("le poids moyen est : " + poids_moy);
-        System.out.println("le nombre de vertices est : " + stat.size());
-        System.out.println("le nbr d'elements supérieur à 5000 est :" + nbr_edge_sup);
-        System.out.println("le poids moyen est : " + poids_moy_sup);
+        //System.out.println("le nbr d'elements est :" + nbr_edge);
+        //System.out.println("le poids moyen est : " + poids_moy);
+        //System.out.println("le nombre de vertices est : " + stat.size());
+        //System.out.println("le nbr d'elements supérieur à 5000 est :" + nbr_edge_sup);
+        //System.out.println("le poids moyen est : " + poids_moy_sup);
 
 
     }
@@ -281,6 +261,7 @@ public class Main {
 			System.out.println("s : See the list of stations available");
 			System.out.println("b : Graph with BFS");
 			System.out.println("d : Weighted graph with djikstra");
+			System.out.println("c : Print Clusters");
 			System.out.println("q : Quit the application \n");
 
 			choice = scan.nextLine();
@@ -295,15 +276,15 @@ public class Main {
 				case "d":
 					djikstraMenu(choice);
 					break;
+				case "c":
+					ClusterRatp();
+					break;
 			}
 		} while (!choice.equals("q"));
 	}
 
 
     public static void main(String[] args) throws JSONException, IOException {
-
-        ClusterRatp();
-
 
 		menu();
 
