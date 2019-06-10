@@ -8,10 +8,10 @@ import java.util.*;
 
 public class Dijkstra {
 
-    public HashMap<String,String> parentNodes;
+    public HashMap<String, String> parentNodes;
     public HashMap<String, Double> distance;
 
-    public Dijkstra(String sourceVertex, HashMap<String,HashMap<String,Double>> HashmapArray) {
+    public Dijkstra(String sourceVertex, HashMap<String, HashMap<String, Double>> HashmapArray) {
 
         parentNodes = new HashMap<>();
 
@@ -95,7 +95,7 @@ public class Dijkstra {
                         if (newDistance < currentDistance) {
                             // Creates a new pair (SimpleEntry object) for (newDistance, destination)
                             //
-                            parentNodes.put(destination,extractedVertex);
+                            parentNodes.put(destination, extractedVertex);
 
                             AbstractMap.SimpleEntry p = new AbstractMap.SimpleEntry(newDistance, destination);
 
@@ -125,10 +125,9 @@ public class Dijkstra {
 
             Double key1 = (Double) ((AbstractMap.SimpleEntry) o1).getKey();
             Double key2 = (Double) ((AbstractMap.SimpleEntry) o2).getKey();
-            if (key1 < key2){
+            if (key1 < key2) {
                 return -1;
-            }
-            else{
+            } else {
                 return 1;
             }
         }
@@ -143,22 +142,24 @@ public class Dijkstra {
 
     }
 
+
+
     public void PrintShortestPath(String sourceVertex, String destVertex) throws IOException, JSONException {
         JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
         JSONObject stat = obj.getJSONObject("stations");
 
-        System.out.println("The shortest path form " + sourceVertex + " to " + destVertex + " is : ");
+        System.out.println("The shortest path form " + sourceVertex + " to " + destVertex + " with weight (" + distance.get(destVertex) + ")" + " is : ");
 
         ArrayList<String> shortestPathList = GetShortestPath(sourceVertex, destVertex);
 
         System.out.print("[");
-        for(String node : shortestPathList)
-        {
+        for (String node : shortestPathList) {
             System.out.print(stat.getJSONObject(node).getString("nom"));
             System.out.print("->");
         }
         System.out.print("]");
     }
+
     public ArrayList<String> GetShortestPath(String sourceVertex, String destVertex) throws IOException, JSONException {
         ArrayList<String> shortestPathList = new ArrayList<String>();
         shortestPathList.add(destVertex);
@@ -166,7 +167,7 @@ public class Dijkstra {
         String currentSrc = destVertex;
         while (!sourceVertex.matches(currentSrc)) {
             currentSrc = parentNodes.get(currentSrc);
-            shortestPathList.add(0,currentSrc);
+            shortestPathList.add(0, currentSrc);
         }
         return shortestPathList;
     }

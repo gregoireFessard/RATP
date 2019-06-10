@@ -128,7 +128,12 @@ public class weightedGraph {
 
         return Math.sqrt((Math.abs(lat1 - lat2)*Math.abs(long1 - long2)) + (Math.abs(long1 - long2)*Math.abs(lat1 - lat2)));
     }
-
+    public double getLat(JSONObject Station) throws JSONException {
+        return (Double.parseDouble(Station.getString("lat")));
+    }
+    public double getLong(JSONObject Station) throws JSONException {
+        return (Double.parseDouble(Station.getString("lng")));
+    }
     public void addToEdge(String src, String dest,Double weight){
         Double w = 0.0;
         if (HashmapArray.get(src).get(dest) != null)
@@ -136,5 +141,9 @@ public class weightedGraph {
 
         HashmapArray.get(src).put(dest,weight+w);
         HashmapArray.get(dest).put(src,weight+w);
+    }
+
+    public void remove(String v1, String v2){
+        HashmapArray.get(v1).remove(v2);
     }
 }
