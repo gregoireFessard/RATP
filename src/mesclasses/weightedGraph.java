@@ -110,17 +110,23 @@ public class weightedGraph {
     public void printGraph() throws IOException, JSONException {
         JSONObject obj = collection.getJSONObjectFromFile("/reseau.json");
         JSONObject stat = obj.getJSONObject("stations");
+        Boolean b;
 
         for(Map.Entry<String,HashMap<String,Double>> vertex: HashmapArray.entrySet()) {
-            System.out.println("Stations near : "+ stat.getJSONObject(vertex.getKey()).getString("nom"));
+            System.out.print(stat.getJSONObject(vertex.getKey()).getString("nom") + " : [ ");
+            b = false;
+
             for (Map.Entry<String,Double> s : vertex.getValue().entrySet()){
-                System.out.print(stat.getJSONObject(s.getKey()).getString("nom")+ "("+s.getValue()+") + ");
+                if (b)
+                    System.out.print(" | ");
+                System.out.print(stat.getJSONObject(s.getKey()).getString("nom")+ "("+s.getValue().intValue()+"m)");
+                b= true;
             }
-            System.out.println("\n");
+            System.out.println(" ]");
         }
     }
 
-    public double getDistance(JSONObject StationSrc, JSONObject StationDest) throws JSONException {
+    public double getDistance2(JSONObject StationSrc, JSONObject StationDest) throws JSONException {
         Double lat1 = Double.parseDouble(StationSrc.getString("lat"));
         Double long1 = Double.parseDouble(StationSrc.getString("lng"));
         Double lat2 = Double.parseDouble(StationDest.getString("lat"));
@@ -128,12 +134,46 @@ public class weightedGraph {
 
         return Math.sqrt((Math.abs(lat1 - lat2)*Math.abs(long1 - long2)) + (Math.abs(long1 - long2)*Math.abs(lat1 - lat2)));
     }
-    public double getLat(JSONObject Station) throws JSONException {
-        return (Double.parseDouble(Station.getString("lat")));
+
+    double getDistance(JSONObject StationSrc, JSONObject StationDest) throws JSONException {
+        Double lat1 = Double.parseDouble(StationSrc.getString("lat"));
+        Double lon1 = Double.parseDouble(StationSrc.getString("lng"));
+        Double lat2 = Double.parseDouble(StationDest.getString("lat"));
+        Double lon2 = Double.parseDouble(StationDest.getString("lng"));
+
+        // Convert degrees to radians
+        lat1 = lat1 * Math.PI / 180.0;
+        lon1 = lon1 * Math.PI / 180.0;
+
+        lat2 = lat2 * Math.PI / 180.0;
+        lon2 = lon2 * Math.PI / 180.0;
+
+        // radius of earth in metres
+        double r = 6378100;
+
+        // P
+        double rho1 = r * Math.cos(lat1);
+        double z1 = r * Math.sin(lat1);
+        double x1 = rho1 * Math.cos(lon1);
+        double y1 = rho1 * Math.sin(lon1);
+
+        // Q
+        double rho2 = r * Math.cos(lat2);
+        double z2 = r * Math.sin(lat2);
+        double x2 = rho2 * Math.cos(lon2);
+        double y2 = rho2 * Math.sin(lon2);
+
+        // Dot product
+        double dot = (x1 * x2 + y1 * y2 + z1 * z2);
+        double cos_theta = dot / (r * r);
+
+        double theta = Math.acos(cos_theta);
+
+        // Distance in Metres
+        return r * theta;
     }
-    public double getLong(JSONObject Station) throws JSONException {
-        return (Double.parseDouble(Station.getString("lng")));
-    }
+
+
     public void addToEdge(String src, String dest,Double weight){
         Double w = 0.0;
         if (HashmapArray.get(src).get(dest) != null)
