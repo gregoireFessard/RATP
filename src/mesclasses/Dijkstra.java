@@ -132,6 +132,7 @@ public class Dijkstra {
             else{
                 return 1;
             }
+            return 0;
         }
     }
 
